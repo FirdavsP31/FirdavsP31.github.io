@@ -32,23 +32,57 @@
         .button:hover {
             background-color: darkgreen;
         }
-        #status {
-            margin-top: 20px;
-            font-size: 20px;
-            color: green;
+
+        /* Стиль для уведомления */
+        #notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgb(25, 124, 101);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 18px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+            transition: opacity 0.3s ease, bottom 0.3s ease;
+        }
+        #notification.close {
+            opacity: 0;
+            bottom: -80px;
         }
     </style>
 </head>
 <body>
     <button class="button" onclick="sendParticipation()">Участвовать</button>
-    <div id="status"></div> <!-- Для вывода статуса -->
+    <div id="notification">
+        Поздравляю, вы участвуете! 
+        <button onclick="closeNotification()" style="background: none; border: none; color: white; font-size: 18px;">Закрыть</button>
+    </div>
     
     <script>
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            let join = document.getElementById('join'); // Отправка данных в бота
-            document.getElementById('status').innerText = "Поздравляю, вы участвуете!"; // Показать сообщение на странице
+            tg.sendData("join"); // Отправка данных в бота
+
+            // Показать уведомление
+            let notification = document.getElementById('notification');
+            notification.style.display = "block";
+
+            // Убираем уведомление через 5 секунд
+            setTimeout(() => {
+                notification.classList.add('close');
+            }, 5000); // через 5 секунд скрывается
+
             tg.close(); // Закрытие мини-приложения
+        }
+
+        function closeNotification() {
+            let notification = document.getElementById('notification');
+            notification.classList.add('close'); // Закрытие вручную
         }
     </script>
 </body>
