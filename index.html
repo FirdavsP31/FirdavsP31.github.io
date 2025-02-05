@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фоновое изображение</title>
+    <style>
+        /* Общие стили */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-image: url('base.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Кнопка */
+        .button {
+            padding: 15px 90px; /* Увеличена ширина и высота кнопки */
+            background-color: rgb(25, 124, 101);
+            color: white;
+            font-size: 24px; /* Увеличен размер шрифта */
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        /* Эффект при наведении на кнопку */
+        .button:hover {
+            background-color: darkgreen;
+        }
+
+    </style>
+</head>
+<body>
+    <button class="button">Участвовать</button>
+</body>
+</html>
