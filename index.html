@@ -19,7 +19,6 @@
             align-items: center;
             text-align: center;
         }
-
         .button {
             padding: 15px 90px;
             background-color: rgb(25, 124, 101);
@@ -30,19 +29,25 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         .button:hover {
             background-color: darkgreen;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 20px;
+            color: green;
         }
     </style>
 </head>
 <body>
     <button class="button" onclick="sendParticipation()">Участвовать</button>
-
+    <div id="status"></div> <!-- Для вывода статуса -->
+    
     <script>
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            tg.sendData("join"); // Отправка данных в бота
+            let join = document.getElementById('join'); // Отправка данных в бота
+            document.getElementById('status').innerText = "Поздравляю, вы участвуете!"; // Показать сообщение на странице
             tg.close(); // Закрытие мини-приложения
         }
     </script>
