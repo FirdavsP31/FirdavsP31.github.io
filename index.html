@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Фоновое изображение</title>
+    <title>Конкурс</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Общие стили */
         body {
             margin: 0;
             padding: 0;
@@ -20,26 +20,31 @@
             text-align: center;
         }
 
-        /* Кнопка */
         .button {
-            padding: 15px 90px; /* Увеличена ширина и высота кнопки */
+            padding: 15px 90px;
             background-color: rgb(25, 124, 101);
             color: white;
-            font-size: 24px; /* Увеличен размер шрифта */
+            font-size: 24px;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        /* Эффект при наведении на кнопку */
         .button:hover {
             background-color: darkgreen;
         }
-
     </style>
 </head>
 <body>
-    <button class="button">Участвовать</button>
+    <button class="button" onclick="sendParticipation()">Участвовать</button>
+
+    <script>
+        function sendParticipation() {
+            let tg = window.Telegram.WebApp;
+            tg.sendData("join"); // Отправка данных в бота
+            tg.close(); // Закрытие мини-приложения
+        }
+    </script>
 </body>
 </html>
