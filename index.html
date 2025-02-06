@@ -85,21 +85,12 @@
                 if (data.status === 'success') {
                     // Пользователь участвует
                     document.getElementById('notification').innerHTML = '<div class="success">Вы участвуете в конкурсе!</div>';
-                    setTimeout(() => {
-                        closeWebApp();
-                    }, 2000); // Закрытие мини-аппа через 2 секунды
                 } else {
                     // Пользователь не подписан
                     document.getElementById('notification').innerHTML = '<div class="notification">Вы не подписаны на канал. Подпишитесь, чтобы участвовать.</div>';
                 }
             }
         });
-
-        // Функция для закрытия мини-аппа
-        function closeWebApp() {
-            let tg = window.Telegram.WebApp;
-            tg.close();  // Закрытие мини-аппа
-        }
     </script>
 </body>
 </html>
