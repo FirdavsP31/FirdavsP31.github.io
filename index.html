@@ -32,16 +32,28 @@
         .button:hover {
             background-color: darkgreen;
         }
+        .notification {
+            font-size: 24px;
+            color: red;
+            margin-top: 20px;
+        }
+        .success {
+            font-size: 24px;
+            color: green;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <button class="button" onclick="sendParticipation()">Участвовать</button>
+    <button class="button" onclick="checkSubscription()">Участвовать</button>
+
+    <div id="notification"></div>
 
     <script>
         // Инициализация WebApp
         Telegram.WebApp.ready();
 
-        function sendParticipation() {
+        function checkSubscription() {
             let tg = window.Telegram.WebApp;
 
             // Проверка инициализации WebApp
@@ -51,45 +63,57 @@
                 return;
             }
 
-            // Логируем попытку отправки данных
-            console.log("Отправка данных в Telegram WebApp.");
-
-            // Отправляем данные в бот
-            tg.sendData("join");
-
-            // Закрытие мини-аппа
-            setTimeout(() => {
-                console.log("Закрытие мини-аппа...");
-                tg.close(); // Закрываем мини-апп после отправки
-            }, 500); // Задержка 500 мс
-
-            // Получаем ID пользователя
+            // Получаем ID пользователя и его информацию
             const userId = tg.initDataUnsafe.user.id;  // Получаем ID пользователя
+            const channelUsername = "@your_channel_username";  // Укажите свой канал (например, @my_channel)
 
-            // Отправка сообщения в личный чат пользователя
-            sendMessageToUser(userId);
-        }
-
-        function sendMessageToUser(userId) {
-            const botToken = '7908138757:AAEDdvrzpOLT-_BKgKT1wvLVxqoeaYiPSqM';  // Замените на ваш API токен
-            const message = 'Поздравляем, вы участвуете в конкурсе!';
-
-            // Формируем URL для запроса к Telegram API
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${userId}&text=${encodeURIComponent(message)}`;
-
-            // Отправка запроса через fetch
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.ok) {
-                        console.log("Сообщение отправлено в личный чат!");
+            // Проверка подписки пользователя на канал
+            checkUserSubscription(userId, channelUsername)
+                .then(isSubscribed => {
+                    if (isSubscribed) {
+                        // Пользователь подписан, выводим сообщение об участии
+                        document.getElementById('notification').innerHTML = '<div class="success">Вы участвуете в конкурсе!</div>';
+                        setTimeout(() => {
+                            closeWebApp();
+                        }, 2000); // Закрытие мини-аппа через 2 секунды
                     } else {
-                        console.error("Ошибка отправки сообщения в личный чат:", data);
+                        // Пользователь не подписан
+                        document.getElementById('notification').innerHTML = '<div class="notification">Вы не подписаны на канал. Подпишитесь, чтобы участвовать.</div>';
                     }
                 })
                 .catch(error => {
-                    console.error("Ошибка при отправке запроса:", error);
+                    console.error("Ошибка при проверке подписки:", error);
+                    alert("Ошибка при проверке подписки. Попробуйте позже.");
                 });
+        }
+
+        // Функция для проверки подписки пользователя на канал
+        function checkUserSubscription(userId, channelUsername) {
+            return new Promise((resolve, reject) => {
+                const url = `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getChatMember?chat_id=${channelUsername}&user_id=${userId}`;
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.ok) {
+                            const status = data.result.status;
+                            if (status === "member" || status === "administrator" || status === "creator") {
+                                resolve(true);  // Пользователь подписан
+                            } else {
+                                resolve(false); // Пользователь не подписан
+                            }
+                        } else {
+                            reject("Ошибка при запросе данных");
+                        }
+                    })
+                    .catch(error => reject(error));
+            });
+        }
+
+        // Функция для закрытия мини-аппа
+        function closeWebApp() {
+            let tg = window.Telegram.WebApp;
+            tg.close();  // Закрытие мини-аппа
         }
     </script>
 </body>
