@@ -55,17 +55,13 @@
             console.log("Отправка данных в Telegram WebApp.");
 
             // Отправляем данные в бот
-            tg.sendData("join", (error) => {
-                if (error) {
-                    console.error("Ошибка отправки данных: ", error);
-                    alert("Ошибка отправки данных: " + error.message);
-                } else {
-                    // Логируем успешную отправку
-                    console.log("Данные успешно отправлены.");
-                    // Закрываем WebApp после успешной отправки
-                    tg.close();
-                }
-            });
+            tg.sendData("join");
+
+            // Добавим небольшую задержку перед закрытием
+            setTimeout(() => {
+                console.log("Закрытие мини-аппа...");
+                tg.close();
+            }, 500); // Задержка в 500 мс
         }
     </script>
 </body>
