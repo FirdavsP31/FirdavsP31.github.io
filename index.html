@@ -44,21 +44,26 @@
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
 
+            // Проверка инициализации WebApp
+            if (!tg) {
+                console.error("Telegram WebApp не инициализирован.");
+                alert("Ошибка: Telegram WebApp не инициализирован.");
+                return;
+            }
+
             // Логируем попытку отправки данных
             console.log("Отправка данных в Telegram WebApp.");
 
             // Отправляем данные в бот
             tg.sendData("join", (error) => {
                 if (error) {
-                    console.log("Ошибка отправки данных: ", error);
-                    alert("Ошибка отправки данных: " + error);
+                    console.error("Ошибка отправки данных: ", error);
+                    alert("Ошибка отправки данных: " + error.message);
                 } else {
                     // Логируем успешную отправку
                     console.log("Данные успешно отправлены.");
                     // Закрываем WebApp после успешной отправки
-                    setTimeout(() => {
-                        tg.close();
-                    }, 500); // Задержка в 500 мс
+                    tg.close();
                 }
             });
         }
