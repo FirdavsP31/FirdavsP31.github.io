@@ -32,57 +32,36 @@
         .button:hover {
             background-color: darkgreen;
         }
-
-        /* Стиль для уведомления */
-        #notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgb(25, 124, 101);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 18px;
-            display: none;
-            z-index: 9999;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            opacity: 1;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-        }
-        #notification.close {
-            opacity: 0;
-            bottom: -80px;
-        }
     </style>
 </head>
 <body>
     <button class="button" onclick="sendParticipation()">Участвовать</button>
-    <div id="notification">
-        Поздравляю, вы участвуете! 
-        <button onclick="closeNotification()" style="background: none; border: none; color: white; font-size: 18px;">Закрыть</button>
-    </div>
-    
+
     <script>
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            let document = getElementById("join"); // Отправка данных в бота
+            let user = tg.initDataUnsafe.user; 
 
-            // Показать уведомление
-            let notification = document.getElementById('notification');
-            notification.style.display = "block";
+            if (user && user.username) {
+                let username = "@" + user.username; // Формируем строку @username
 
-            // Убираем уведомление через 5 секунд
-            setTimeout(() => {
-                notification.classList.add('close');
-            }, 5000); // через 5 секунд скрывается
+                // Закрываем мини-приложение
+                tg.close();
 
-            tg.close(); // Закрытие мини-приложения
-        }
-
-        function closeNotification() {
-            let notification = document.getElementById('notification');
-            notification.classList.add('close'); // Закрытие вручную
+                // Отправляем username в бота
+                fetch("https://your-server.com/save_user", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username: username })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Данные отправлены:", data);
+                })
+                .catch(error => console.error("Ошибка:", error));
+            } else {
+                console.error("Ошибка: невозможно получить username!");
+            }
         }
     </script>
 </body>
