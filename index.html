@@ -38,16 +38,23 @@
     <button class="button" onclick="sendParticipation()">Участвовать</button>
 
     <script>
+        // Инициализация WebApp
+        Telegram.WebApp.ready();
+
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            
-            // Отправляем данные в бот
-            tg.sendData("join");
 
-            // Небольшая задержка перед закрытием WebApp
-            setTimeout(() => {
-                tg.close();
-            }, 500); // Задержка в 500 мс
+            // Отправляем данные в бот
+            tg.sendData("join", (error) => {
+                if (error) {
+                    alert("Ошибка отправки данных: " + error);
+                } else {
+                    // Закрываем WebApp после успешной отправки
+                    setTimeout(() => {
+                        tg.close();
+                    }, 500); // Задержка в 500 мс
+                }
+            });
         }
     </script>
 </body>
