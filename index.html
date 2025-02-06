@@ -41,13 +41,11 @@
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
             
-            // Отправка данных "join" в бота
+            // Отправляем данные в бот
             tg.sendData("join");
 
-            // Добавляем небольшую задержку перед закрытием WebApp
-            setTimeout(() => {
-                tg.close();
-            }, 500); // Закрытие через 500 мс (0.5 сек)
+            // Закрытие WebApp после отправки данных
+            tg.close();
         }
     </script>
 </body>
