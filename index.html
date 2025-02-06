@@ -33,7 +33,6 @@
             background-color: darkgreen;
         }
 
-        /* Стиль для уведомления */
         #notification {
             position: fixed;
             bottom: 20px;
@@ -66,25 +65,22 @@
     <script>
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            let notification = document.getElementById('notification');
-            
-            // Получаем username пользователя
-            let user = tg.initDataUnsafe.user;
-            let username = user ? user.username : "Аноним";
-
-            // Скрываем WebApp перед отправкой данных
-            tg.close(); 
+            let user = tg.initDataUnsafe.user || {};
+            let username = user.username ? "@" + user.username : "Аноним";
+            let userId = user.id || 0;
 
             // Отправка данных в бота
-            tg.sendData(JSON.stringify({ username: username }));
+            tg.sendData(JSON.stringify({ username: username, user_id: userId }));
 
-            // Показываем уведомление
+            // Показать уведомление
+            let notification = document.getElementById('notification');
             notification.style.display = "block";
 
-            // Убираем уведомление через 5 секунд
+            // Убираем уведомление через 2 секунды и закрываем WebApp
             setTimeout(() => {
                 notification.classList.add('close');
-            }, 5000);
+                setTimeout(() => tg.close(), 500); // Закрытие WebApp через 500 мс после скрытия уведомления
+            }, 2000);
         }
 
         function closeNotification() {
