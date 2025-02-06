@@ -32,61 +32,17 @@
         .button:hover {
             background-color: darkgreen;
         }
-
-        #notification {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgb(25, 124, 101);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 18px;
-            display: none;
-            z-index: 9999;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-            opacity: 1;
-            transition: opacity 0.3s ease, bottom 0.3s ease;
-        }
-        #notification.close {
-            opacity: 0;
-            bottom: -80px;
-        }
     </style>
 </head>
 <body>
-    <button class="button" onclick="sendParticipation()">Участвовать</button>
-    <div id="notification">
-        Поздравляю, вы участвуете! 
-        <button onclick="closeNotification()" style="background: none; border: none; color: white; font-size: 18px;">Закрыть</button>
-    </div>
-    
+    <button id="join" class="button">Участвовать</button>
+
     <script>
-        function sendParticipation() {
+        document.getElementById("join").addEventListener("click", function () {
             let tg = window.Telegram.WebApp;
-            let user = tg.initDataUnsafe.user || {};
-            let username = user.username ? "@" + user.username : "Аноним";
-            let userId = user.id || 0;
-
-            // Отправка данных в бота
-            tg.sendData(JSON.stringify({ username: username, user_id: userId }));
-
-            // Показать уведомление
-            let notification = document.getElementById('notification');
-            notification.style.display = "block";
-
-            // Убираем уведомление через 2 секунды и закрываем WebApp
-            setTimeout(() => {
-                notification.classList.add('close');
-                setTimeout(() => tg.close(), 500); // Закрытие WebApp через 500 мс после скрытия уведомления
-            }, 2000);
-        }
-
-        function closeNotification() {
-            let notification = document.getElementById('notification');
-            notification.classList.add('close'); // Закрытие вручную
-        }
+            tg.sendData("join"); // Отправка данных боту
+            tg.close(); // Закрытие WebApp
+        });
     </script>
 </body>
 </html>
