@@ -35,14 +35,18 @@
     </style>
 </head>
 <body>
-    <button id="join" class="button">Участвовать</button>
+    <button class="button" onclick="sendParticipation()">Участвовать</button>
 
     <script>
-        document.getElementById("join").addEventListener("click", function () {
+        function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            tg.sendData("join"); // Отправка данных боту
-            tg.close(); // Закрытие WebApp
-        });
+            
+            // Отправка данных "join" в бота
+            tg.sendData("join");
+            
+            // Закрытие WebApp
+            tg.close();
+        }
     </script>
 </body>
 </html>
