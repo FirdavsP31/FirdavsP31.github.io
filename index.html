@@ -63,6 +63,13 @@
                 return;
             }
 
+            // Убедимся, что данные о пользователе доступны
+            if (!tg.initDataUnsafe || !tg.initDataUnsafe.user) {
+                console.error("Данные о пользователе не получены.");
+                alert("Ошибка: Не удалось получить информацию о пользователе.");
+                return;
+            }
+
             // Получаем ID пользователя
             const userId = tg.initDataUnsafe.user.id;
 
