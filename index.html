@@ -66,27 +66,18 @@
     <script>
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
-            let notification = document.getElementById('notification');
-
-            // Отправка данных в бота
-            tg.sendData("join");
+            let document = getElementById("join"); // Отправка данных в бота
 
             // Показать уведомление
+            let notification = document.getElementById('notification');
             notification.style.display = "block";
 
-            // Закрыть уведомление через 5 секунд
+            // Убираем уведомление через 5 секунд
             setTimeout(() => {
                 notification.classList.add('close');
             }, 5000); // через 5 секунд скрывается
 
-            // Закрытие мини-приложения
-            tg.close();
-
-            // После закрытия мини-приложения можно отправить сообщение бота
-            setTimeout(() => {
-                // Код для отправки сообщения бота будет выполнен после закрытия мини-приложения
-                tg.sendData("joined");
-            }, 500);
+            tg.close(); // Закрытие мини-приложения
         }
 
         function closeNotification() {
