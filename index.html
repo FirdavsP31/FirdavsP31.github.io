@@ -51,36 +51,45 @@
                 return;
             }
 
+            // Логируем попытку отправки данных
             console.log("Отправка данных в Telegram WebApp.");
+
+            // Отправляем данные в бот
             tg.sendData("join");
 
             // Закрытие мини-аппа
             setTimeout(() => {
                 console.log("Закрытие мини-аппа...");
-                tg.close();
+                tg.close(); // Закрываем мини-апп после отправки
             }, 500); // Задержка 500 мс
 
-            // Получаем информацию о пользователе
-            const userId = tg.initDataUnsafe.user.id; // Получаем ID пользователя
+            // Получаем ID пользователя
+            const userId = tg.initDataUnsafe.user.id;  // Получаем ID пользователя
 
-            // Отправка сообщения через серверный API
-            fetch('https://firdavsp31.github.io/', {  // Указываем URL своего API сервера
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    chat_id: userId,  // Отправляем ID пользователя, чтобы сообщение ушло ему
-                    message: 'Поздравляем, вы участвуете в конкурсе!'
+            // Отправка сообщения в личный чат пользователя
+            sendMessageToUser(userId);
+        }
+
+        function sendMessageToUser(userId) {
+            const botToken = '7908138757:AAEDdvrzpOLT-_BKgKT1wvLVxqoeaYiPSqM';  // Замените на ваш API токен
+            const message = 'Поздравляем, вы участвуете в конкурсе!';
+
+            // Формируем URL для запроса к Telegram API
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${userId}&text=${encodeURIComponent(message)}`;
+
+            // Отправка запроса через fetch
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.ok) {
+                        console.log("Сообщение отправлено в личный чат!");
+                    } else {
+                        console.error("Ошибка отправки сообщения в личный чат:", data);
+                    }
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Ответ от сервера:', data);
-            })
-            .catch(error => {
-                console.error('Ошибка отправки:', error);
-            });
+                .catch(error => {
+                    console.error("Ошибка при отправке запроса:", error);
+                });
         }
     </script>
 </body>
