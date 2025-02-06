@@ -44,11 +44,17 @@
         function sendParticipation() {
             let tg = window.Telegram.WebApp;
 
+            // Логируем попытку отправки данных
+            console.log("Отправка данных в Telegram WebApp.");
+
             // Отправляем данные в бот
             tg.sendData("join", (error) => {
                 if (error) {
+                    console.log("Ошибка отправки данных: ", error);
                     alert("Ошибка отправки данных: " + error);
                 } else {
+                    // Логируем успешную отправку
+                    console.log("Данные успешно отправлены.");
                     // Закрываем WebApp после успешной отправки
                     setTimeout(() => {
                         tg.close();
