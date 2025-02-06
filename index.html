@@ -45,7 +45,7 @@
     </style>
 </head>
 <body>
-    <button class="button" onclick="checkSubscription()">Участвовать</button>
+    <button class="button" onclick="joinContest()">Участвовать</button>
 
     <div id="notification"></div>
 
@@ -53,7 +53,7 @@
         // Инициализация WebApp
         Telegram.WebApp.ready();
 
-        function checkSubscription() {
+        function joinContest() {
             let tg = window.Telegram.WebApp;
 
             // Проверка инициализации WebApp
@@ -63,52 +63,30 @@
                 return;
             }
 
-            // Получаем ID пользователя и его информацию
-            const userId = tg.initDataUnsafe.user.id;  // Получаем ID пользователя
-            const channelUsername = "@Ludoblade_test";  // Укажите свой канал (например, @my_channel)
+            // Получаем ID пользователя
+            const userId = tg.initDataUnsafe.user.id;
 
-            // Проверка подписки пользователя на канал
-            checkUserSubscription(userId, channelUsername)
-                .then(isSubscribed => {
-                    if (isSubscribed) {
-                        // Пользователь подписан, выводим сообщение об участии
-                        document.getElementById('notification').innerHTML = '<div class="success">Вы участвуете в конкурсе!</div>';
-                        setTimeout(() => {
-                            closeWebApp();
-                        }, 2000); // Закрытие мини-аппа через 2 секунды
-                    } else {
-                        // Пользователь не подписан
-                        document.getElementById('notification').innerHTML = '<div class="notification">Вы не подписаны на канал. Подпишитесь, чтобы участвовать.</div>';
-                    }
-                })
-                .catch(error => {
-                    console.error("Ошибка при проверке подписки:", error);
-                    alert("Ошибка при проверке подписки. Попробуйте позже.");
-                });
+            // Отправляем команду боту для проверки подписки
+            tg.sendData(JSON.stringify({ action: 'check_subscription', userId: userId }));
         }
 
-        // Функция для проверки подписки пользователя на канал
-        function checkUserSubscription(userId, channelUsername) {
-            return new Promise((resolve, reject) => {
-                const url = `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getChatMember?chat_id=${channelUsername}&user_id=${userId}`;
+        // Слушаем ответ от бота
+        window.addEventListener('message', function(event) {
+            const data = JSON.parse(event.data);
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.ok) {
-                            const status = data.result.status;
-                            if (status === "member" || status === "administrator" || status === "creator") {
-                                resolve(true);  // Пользователь подписан
-                            } else {
-                                resolve(false); // Пользователь не подписан
-                            }
-                        } else {
-                            reject("Ошибка при запросе данных");
-                        }
-                    })
-                    .catch(error => reject(error));
-            });
-        }
+            if (data.action === 'subscription_result') {
+                if (data.status === 'success') {
+                    // Пользователь участвует
+                    document.getElementById('notification').innerHTML = '<div class="success">Вы участвуете в конкурсе!</div>';
+                    setTimeout(() => {
+                        closeWebApp();
+                    }, 2000); // Закрытие мини-аппа через 2 секунды
+                } else {
+                    // Пользователь не подписан
+                    document.getElementById('notification').innerHTML = '<div class="notification">Вы не подписаны на канал. Подпишитесь, чтобы участвовать.</div>';
+                }
+            }
+        });
 
         // Функция для закрытия мини-аппа
         function closeWebApp() {
