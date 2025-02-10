@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,8 +17,9 @@
             justify-content: center;
             align-items: center;
             color: white;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
+
         .content {
             background: rgba(0, 0, 0, 0.7);
             padding: 20px;
@@ -25,18 +27,22 @@
             max-width: 500px;
             text-align: center;
         }
+
         h1 {
             margin: 0 0 15px;
             font-size: 26px;
         }
+
         .info-block {
             margin-bottom: 15px;
             font-size: 18px;
         }
+
         .info-label {
             font-weight: bold;
             color: #00b894;
         }
+
         .button {
             padding: 12px 30px;
             background-color: #00b894;
@@ -49,15 +55,18 @@
             width: 100%;
             margin-top: 15px;
         }
+
         .button:hover {
             background-color: #008c74;
         }
+
         .button:disabled {
             background-color: gray;
             cursor: not-allowed;
         }
     </style>
 </head>
+
 <body>
     <div class="content">
         <h1>{{ giveaway.name }}</h1>
@@ -70,7 +79,8 @@
         <div class="info-block">
             <span class="info-label">Статус:</span> {{ "Активен" if giveaway.is_active else "Завершен" }}
         </div>
-        <button class="button" id="participate-button" onclick="handleParticipation()" {% if not giveaway.is_active %}disabled{% endif %}>
+        <button class="button" id="participate-button" onclick="handleParticipation()" {% if not giveaway.is_active
+            %}disabled{% endif %}>
             {{ 'Участвовать' if giveaway.is_active else 'Розыгрыш завершен' }}
         </button>
     </div>
@@ -86,10 +96,6 @@
         const userId = tg?.initDataUnsafe?.user?.id;
         const isActive = JSON.parse('{{ giveaway.is_active | tojson }}');
         const button = document.getElementById("participate-button");
-
-        if (!isActive) {
-            button.disabled = true;
-        }
 
         function handleParticipation() {
             if (!isActive) {
@@ -110,4 +116,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,6 +1,10 @@
 
 import logging
 import asyncio
+import time
+import hmac
+import hashlib
+from aiogram.types import WebAppInfo
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -11,11 +15,12 @@ from models import async_main
 from requests import *
 from keyboards import *
 import json
-
+from urllib.parse import parse_qsl
+from app import app
 
 logging.basicConfig(level=logging.INFO)
 
-API_TOKEN = '7908138757:AAEDdvrzpOLT-_BKgKT1wvLVxqoeaYiPSqM'
+API_TOKEN = '7790467084:AAGYK-Gm60ailV6B0q5K4bOgNaQ01oOu0L0'
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher()
 
@@ -150,7 +155,7 @@ async def finish_add_channels(callback: CallbackQuery, state: FSMContext):
     giveaway_id = data['giveaway_id']
     
     # Генерируем deep link
-    deep_link = f"https://t.me/ludoblade_bot/ludoblade_bot?startapp=giveaway_{giveaway_id}"
+    deep_link = f"https://t.me/givegive2323bot/givegive2323bot?startapp=giveaway_{giveaway_id}"
     
     # Сохраняем ссылку в базе данных
     await set_give_link(giveaway_id, deep_link)
@@ -361,38 +366,50 @@ async def check_subscriptions(message: Message):
         'all_subscribed': is_subscribed
     }))
 
-async def join_giveaway(giveaway_id: int, user_id: int) -> bool:
 
-    print(f"Пользователь {user_id} участвует в розыгрыше {giveaway_id}")
-    return True  
-
-@dp.message_handler(content_types=types.ContentType.WEB_APP_DATA)
-async def web_app_data_handler(message: types.Message):
+@dp.message(F.web_app_data)
+async def handle_web_app_data(message: types.Message):
+    data = message.web_app_data.data
     try:
-        data = json.loads(message.web_app_data.data)
-        user_id = message.from_user.id
-        giveaway_id = int(data.get("giveaway_id"))
+        data_dict = json.loads(data)
+        user_id = data_dict.get('user_id')
+        giveaway_id = data_dict.get('giveaway_id')
         
-        if not giveaway_id:
-            await message.answer("Ошибка: Некорректный ID розыгрыша")
+        # Проверяем, что пользователь и розыгрыш существуют
+        giveaway = await get_giveaway_details(giveaway_id)
+        if not giveaway:
+            await message.answer("Розыгрыш не найден.")
             return
-
-        success = await join_giveaway(giveaway_id, user_id)
         
+        # Добавляем пользователя в розыгрыш
+        success = await join_giveaway(giveaway_id, user_id)
         if success:
-            await message.answer(f"🎉 Вы успешно участвуете в розыгрыше!\nID: {giveaway_id}")
+            await message.answer("Вы успешно присоединились к розыгрышу!")
         else:
-            await message.answer("❌ Не удалось присоединиться к розыгрышу")
+            await message.answer("Не удалось присоединиться. Возможно, розыгрыш завершен или достигнут лимит участников.")
     except Exception as e:
-        await message.answer("⚠ Ошибка обработки данных")
-        print(f"Ошибка обработки WebAppData: {e}")
+        logging.error(f"Ошибка обработки данных из WebApp: {e}")
+        await message.answer("Произошла ошибка при обработке вашего запроса.")
+
+@dp.callback_query_handler(lambda c: c.data.startswith("join_"))
+async def join_giveaway_handler(callback_query: types.CallbackQuery):
+    """Обработка участия в розыгрыше."""
+    giveaway_id = callback_query.data.split("_")[1]
+    user_id = callback_query.from_user.id
+
+    success = await join_giveaway(int(giveaway_id), user_id)
+    if not success:
+        await callback_query.answer("❌ Не удалось присоединиться", show_alert=True)
+        return
+
+    await callback_query.answer("🎉 Вы участвуете в розыгрыше!", show_alert=True)
+    await callback_query.answer(user_id, f"🎉 Вы успешно участвуете в розыгрыше!\nID: {giveaway_id}")
 
 async def main():
     await async_main()
     await dp.start_polling(bot)
 
-if __name__ == "__main__":
-    if asyncio.get_event_loop_policy().__class__.__name__ == "WindowsProactorEventLoopPolicy":
-        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
+if __name__ == '__main__':
     asyncio.run(main())
+    app.run(debug=True)
+    
